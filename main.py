@@ -1,15 +1,25 @@
+from pymongo import ReturnDocument
 from fastapi import FastAPI, HTTPException, Query
 from bson import ObjectId
 from typing import List
 
-# অন্য ফাইল থেকে ইমপোর্ট করা
+
 from database import product_collection
 from schemas import ProductCreate, ProductResponse, ProductUpdate
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Ecommerce Inventory API")
 
 
-# MongoDB ডেটাকে Python ডিকশনারিতে সাজানোর জন্য হেল্পার
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 def product_helper(product) -> dict:
     return {
         "id": str(product["_id"]),
@@ -18,6 +28,8 @@ def product_helper(product) -> dict:
         "stock": product["stock"],
         "category": product["category"],
         "description": product.get("description", ""),
+        "discount": product.get("discount", 0),
+        "color": product.get("color", "N/A"),
     }
 
 
@@ -26,7 +38,7 @@ def home():
     return {"status": "API is running"}
 
 
-# ১. প্রোডাক্ট অ্যাড করা (Add Product)
+
 @app.post("/products", response_model=ProductResponse)
 def add_product(product: ProductCreate):
     new_product = product_collection.insert_one(product.dict())
@@ -34,7 +46,7 @@ def add_product(product: ProductCreate):
     return product_helper(created)
 
 
-# ২. সব প্রোডাক্টের লিস্ট (List Products)
+
 @app.get("/products", response_model=List[ProductResponse])
 def list_products():
     products = []
@@ -43,7 +55,7 @@ def list_products():
     return products
 
 
-# ৩. নাম দিয়ে সার্চ করা (Search Product)
+
 @app.get("/products/search", response_model=List[ProductResponse])
 def search_product(name: str):
     products = []
@@ -53,22 +65,27 @@ def search_product(name: str):
     return products
 
 
-# ৪. স্টক বা তথ্য আপডেট করা (Update Product/Stock)
+
 @app.put("/products/{id}", response_model=ProductResponse)
 def update_product(id: str, data: ProductUpdate):
-    update_data = {k: v for k, v in data.dict().items() if v is not None}
     if not ObjectId.is_valid(id):
         raise HTTPException(status_code=400, detail="Invalid ID format")
 
+    update_data = {k: v for k, v in data.dict().items() if v is not None}
+
     updated = product_collection.find_one_and_update(
-        {"_id": ObjectId(id)}, {"$set": update_data}, return_document=True
+        {"_id": ObjectId(id)},
+        {"$set": update_data},
+        return_document=ReturnDocument.AFTER,  
     )
+
     if updated:
         return product_helper(updated)
+
     raise HTTPException(status_code=404, detail="Product not found")
 
 
-# ৫. প্রোডাক্ট রিমুভ করা (Remove Product)
+
 @app.delete("/products/{id}")
 def delete_product(id: str):
     if not ObjectId.is_valid(id):
