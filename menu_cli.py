@@ -94,8 +94,8 @@ def list_products():
         table.add_row(
             str(p["_id"]),
             p["name"],
-            f"{p['price']:.2f}",  # 2 দশমিক পর্যন্ত দেখাও
-            discount_text,  # ✅ সঠিক ডিসকাউন্ট টেক্সট ব্যবহার করো
+            f"{p['price']:.2f}",  
+            discount_text,
             f"{final_price:.2f}",
             str(p["stock"]),
             p["category"],
@@ -172,3 +172,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
