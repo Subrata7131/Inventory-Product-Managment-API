@@ -3,22 +3,18 @@ from dotenv import load_dotenv
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
-# .env ফাইল থেকে ভেরিয়েবল লোড করা
+
 load_dotenv()
 
-# MONGO_uri এবং DATABASE_NAME লোড করা
 MONGO_uri = os.getenv("MONGO_uri")
 DB_NAME = os.getenv("DATABASE_NAME", "InventoryDB")
 
-# কানেকশন তৈরি করা
 client = MongoClient(MONGO_uri, server_api=ServerApi("1"))
 
-# ডাটাবেস এবং কালেকশন অবজেক্ট তৈরি
 db = client[DB_NAME]
 product_collection = db["products"]
 
 
-# ১. কানেকশন টেস্ট করার ফাংশন (এটি মিসিং ছিল)
 def test_db():
     try:
         client.admin.command("ping")
@@ -27,7 +23,6 @@ def test_db():
         print(f"❌ Connection failed: {e}")
 
 
-# ২. ইউজার ইনপুট দিয়ে প্রোডাক্ট যোগ করার ফাংশন
 def add_products_from_user():
     print("\n--- 🛒 Ecommerce Inventory Data Entry ---")
 
@@ -50,7 +45,6 @@ def add_products_from_user():
                 "description": description,
             }
 
-            # ডাটাবেসে ইনসার্ট করা
             result = product_collection.insert_one(new_product)
             print(f"✅ Sucessful add! (ID: {result.inserted_id})\n")
 
@@ -58,7 +52,8 @@ def add_products_from_user():
             print("❌ wrong input please write correct input\n")
 
 
-# প্রোগ্রামটি রান করার অংশ
+
 if __name__ == "__main__":
-    test_db()  # এখন আর এরর আসবে না
+    test_db()  
     add_products_from_user()
+
