@@ -1,6 +1,6 @@
 import os
 
-# import certifi
+import certifi
 from dotenv import load_dotenv
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
@@ -13,7 +13,7 @@ MONGO_uri = os.getenv("MONGO_uri")
 DB_NAME = os.getenv("DATABASE_NAME", "InventoryDB")
 
 
-client = MongoClient(MONGO_uri, server_api=ServerApi("1"))  # tlsCAFile=certifi.where())
+client = MongoClient(MONGO_uri, server_api=ServerApi("1"),tlsCAFile=certifi.where())
 
 db = client[DB_NAME]
 product_collection = db["products"]
@@ -70,5 +70,6 @@ def add_products_from_user():
 if __name__ == "__main__":
     test_db()
     add_products_from_user()
+
 
 
