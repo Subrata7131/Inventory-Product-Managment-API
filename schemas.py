@@ -16,7 +16,6 @@ class ProductCreate(ProductBase):
     pass
 
 
-
 class ProductUpdate(BaseModel):
     name: Optional[str] = None
     price: Optional[float] = None
@@ -26,12 +25,13 @@ class ProductUpdate(BaseModel):
     discount: Optional[float] = None
 
 
-
 class ProductResponse(ProductBase):
     id: str
 
     class Config:
         from_attributes = True
+
+
 
 
 
