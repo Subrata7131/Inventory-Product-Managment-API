@@ -1,4 +1,6 @@
 import os
+
+# import certifi
 from dotenv import load_dotenv
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
@@ -6,10 +8,12 @@ from pymongo.server_api import ServerApi
 
 load_dotenv()
 
+
 MONGO_uri = os.getenv("MONGO_uri")
 DB_NAME = os.getenv("DATABASE_NAME", "InventoryDB")
 
-client = MongoClient(MONGO_uri, server_api=ServerApi("1"))
+
+client = MongoClient(MONGO_uri, server_api=ServerApi("1"))  # tlsCAFile=certifi.where())
 
 db = client[DB_NAME]
 product_collection = db["products"]
@@ -33,6 +37,16 @@ def add_products_from_user():
                 break
 
             price = float(input("Enter Price: "))
+
+            discount_input = input("Enter Discount (% , optional): ")
+            if discount_input:
+                try:
+                    discount = float(discount_input)
+                except ValueError:
+                    discount = 0.0
+            else:
+                discount = 0.0
+
             stock = int(input("Enter Stock Quantity: "))
             category = input("Enter Category: ")
             description = input("Enter Description: ")
@@ -40,6 +54,7 @@ def add_products_from_user():
             new_product = {
                 "name": name,
                 "price": price,
+                "discount": discount,
                 "stock": stock,
                 "category": category,
                 "description": description,
@@ -52,8 +67,8 @@ def add_products_from_user():
             print("❌ wrong input please write correct input\n")
 
 
-
 if __name__ == "__main__":
-    test_db()  
+    test_db()
     add_products_from_user()
+
 
