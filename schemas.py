@@ -23,6 +23,7 @@ class ProductUpdate(BaseModel):
     stock: Optional[int] = None
     category: Optional[str] = None
     description: Optional[str] = None
+    discount: Optional[float] = None
 
 
 
@@ -31,5 +32,6 @@ class ProductResponse(ProductBase):
 
     class Config:
         from_attributes = True
+
 
 
